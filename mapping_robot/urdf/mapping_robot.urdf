@@ -8,7 +8,7 @@
     name="base_link">
     <inertial>
       <origin
-        xyz="0.24401 -0.16817 0.025668"
+        xyz="0 0 0"
         rpy="0 0 0" />
       <mass
         value="0.35983" />
@@ -48,7 +48,7 @@
     name="left_wheel">
     <inertial>
       <origin
-        xyz="-0.1931 0.23699 0.24394"
+        xyz="0 0 0"
         rpy="0 0 0" />
       <mass
         value="0.0047382" />
@@ -88,7 +88,7 @@
     name="left_wheel_joint"
     type="revolute">
     <origin
-      xyz="0.37685 -0.26212 -0.4793"
+      xyz="0.0 0 0"
       rpy="0 0 0" />
     <parent
       link="base_link" />
@@ -106,7 +106,7 @@
     name="right_wheel">
     <inertial>
       <origin
-        xyz="-0.1931 0.23699 0.24394"
+        xyz="0 0 0"
         rpy="0 0 0" />
       <mass
         value="0.0047382" />
@@ -146,7 +146,7 @@
     name="right_wheel_joint"
     type="revolute">
     <origin
-      xyz="0.49222 0.21894 -0.47244"
+      xyz="0.0 0.0 0.0"
       rpy="1.5708 0 0" />
     <parent
       link="base_link" />

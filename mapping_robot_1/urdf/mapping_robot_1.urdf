@@ -3,7 +3,7 @@
      Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot
-  name="mapping_robot_`1">
+  name="mapping_robot_1">
   <link
     name="base_link">
     <inertial>
@@ -26,7 +26,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://mapping_robot_`1/meshes/base_link.STL" />
+          filename="package://mapping_robot_1/meshes/base_link.STL" />
       </geometry>
       <material
         name="">
@@ -40,7 +40,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://mapping_robot_`1/meshes/base_link.STL" />
+          filename="package://mapping_robot_1/meshes/base_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -48,7 +48,7 @@
     name="Left_link">
     <inertial>
       <origin
-        xyz="0.062002 -0.0092183 0.00012223"
+        xyz="0.07 0.0 -0.005"
         rpy="0 0 0" />
       <mass
         value="0.0047382" />
@@ -62,11 +62,11 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="-0.135 0 0"
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://mapping_robot_`1/meshes/Left_link.STL" />
+          filename="package://mapping_robot_1/meshes/Left_link.STL" />
       </geometry>
       <material
         name="">
@@ -76,11 +76,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="-0.135 0 0"
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://mapping_robot_`1/meshes/Left_link.STL" />
+          filename="package://mapping_robot_1/meshes/Left_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -88,7 +88,7 @@
     name="left_wheel"
     type="revolute">
     <origin
-      xyz="0 0 0"
+      xyz="0.07 0.0 -0.005"
       rpy="0 0 0" />
     <parent
       link="base_link" />
@@ -98,7 +98,7 @@
       xyz="1 0 0" />
     <limit
       lower="0"
-      upper="0"
+      upper="6.28"
       effort="0"
       velocity="0" />
   </joint>
@@ -106,7 +106,7 @@
     name="Right_Link">
     <inertial>
       <origin
-        xyz="0.051654 0.0014576 0.0090772"
+        xyz="-0.07 0.0 -0.005"
         rpy="0 0 0" />
       <mass
         value="0.0047382" />
@@ -120,11 +120,11 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="0.135 0 0"
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://mapping_robot_`1/meshes/Right_Link.STL" />
+          filename="package://mapping_robot_1/meshes/Right_Link.STL" />
       </geometry>
       <material
         name="">
@@ -134,11 +134,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0.135 0.0 0.0"
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://mapping_robot_`1/meshes/Right_Link.STL" />
+          filename="package://mapping_robot_1/meshes/Right_Link.STL" />
       </geometry>
     </collision>
   </link>
@@ -146,7 +146,7 @@
     name="Right_wheel"
     type="revolute">
     <origin
-      xyz="-0.010873 0.009058 -0.0074666"
+      xyz="-0.07 0.0 -0.005"
       rpy="0 0 0" />
     <parent
       link="base_link" />
@@ -156,7 +156,7 @@
       xyz="-1 0 0" />
     <limit
       lower="0"
-      upper="0"
+      upper="6.28"
       effort="0"
       velocity="0" />
   </joint>
