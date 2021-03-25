@@ -4,7 +4,7 @@
 import cv2
 import time
 import cv_bridge
-import rospy
+# import rospy
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy import signal, ndimage
@@ -155,53 +155,54 @@ class DisparityMap():
         
         return output
 
-def storeLeftImage(msg):
-    global imL
-    print("done")
-    bridge = cv_bridge.CvBridge()
-    imL = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+# def storeLeftImage(msg):
+#     global imL
+#     print("done")
+#     bridge = cv_bridge.CvBridge()
+#     imL = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
 
-def storeRightImage(msg):
-    global imR
-    print("Done1")
-    bridge = cv_bridge.CvBridge()
-    imR = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+# def storeRightImage(msg):
+#     global imR
+#     print("Done1")
+#     bridge = cv_bridge.CvBridge()
+#     imR = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
 
 def main():
-    rospy.init_node('stereo_to_depth')
-    sub1 = rospy.Subscriber('/camera/rgb/image_raw', Image, callback=storeLeftImage, queue_size=10)
-    sub2 = rospy.Subscriber('/camera1/rgb/image_raw1', Image, callback=storeRightImage, queue_size=10)
+    # rospy.init_node('stereo_to_depth')
+    # sub1 = rospy.Subscriber('/camera/rgb/image_raw', Image, callback=storeLeftImage, queue_size=10)
+    # sub2 = rospy.Subscriber('/camera1/rgb/image_raw1', Image, callback=storeRightImage, queue_size=10)
 
-    global imL
-    global imR
-    print("Waiting for left and right image")
-    while True:
-        try:
-            imL
-            imR
-            break
-        except:
-            continue
-    print("Initialized left and right image")
+    imL = cv2.imread("left_image.png")
+    imR = cv2.imread("right_image.png")
+    # print("Waiting for left and right image")
+    # while True:
+    #     try:
+    #         imL
+    #         imR
+    #         break
+    #     except:
+    #         continue
+    # print("Initialized left and right image")
 
-    blocksize = 16
-    numdisparities = 128
-    cv2.imwrite("left_image.png", imR)
-    cv2.imwrite("right_image.png", imL)
-    rate = rospy.Rate(1)
+    blocksize = 7
+    numdisparities = 64
+    # cv2.imwrite("left_image.png", imR)
+    # cv2.imwrite("right_image.png", imL)
+    # rate = rospy.Rate(1)
     while True:
         imgL = cv2.cvtColor(imL,cv2.COLOR_BGR2GRAY)
         imgR = cv2.cvtColor(imR,cv2.COLOR_BGR2GRAY)
         print("gray Done")
-        # disparity = DisparityMap(numDisparities=numdisparities, blockSize=blocksize)
-        # disparityMap1 = disparity.CT(imgL, imgR, (11, 11))
-        # disparityMap2 = disparity.LCDM(disparityMap1, (11, 11), imgL,numdisparities)
-        # disparityMap2 = disparityMap2*2
-        # disparityMap2 = disparityMap2.astype(np.uint8)
-        # heatmap = cv2.applyColorMap(disparityMap2, cv2.COLORMAP_RAINBOW)
-        cv2.imshow("Left image", imL)
-        cv2.imshow("Right image", imR)
-        # cv2.imshow("Depth Map", disparityMap2)
+        disparity = DisparityMap(numDisparities=numdisparities, blockSize=blocksize)
+        disparityMap1 = disparity.CT(imgL, imgR, (11, 11))
+        disparityMap2 = disparity.LCDM(disparityMap1, (11, 11), imgL,numdisparities)
+        disparityMap2 = disparityMap2*10
+        disparityMap2 = disparityMap2.astype(np.uint8)
+        heatmap = cv2.applyColorMap(disparityMap2, cv2.COLORMAP_JET)
+        # cv2.imshow("Left image", imL)
+        # cv2.imshow("Right image", imR)
+        cv2.imshow("Depth Map Stereo", disparityMap2)
+        cv2.imshow("Heat Map Stereo", heatmap)
         print("image calulated")
         cv2.waitKey(1000)
         # rate.sleep()
