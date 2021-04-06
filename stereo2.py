@@ -26,6 +26,9 @@ class DisparityMap():
         
         bits = 0
         outputs = []
+
+        ##########
+        # 
         for row in range(kernel_size[0]):
             for col in range(kernel_size[1]):                  
                 output = (output << 1) | (image[row:row+r, col:col+c] >= center)
@@ -196,7 +199,7 @@ def main():
         disparity = DisparityMap(numDisparities=numdisparities, blockSize=blocksize)
         disparityMap1 = disparity.CT(imgL, imgR, (11, 11))
         disparityMap2 = disparity.LCDM(disparityMap1, (11, 11), imgL,numdisparities)
-        disparityMap2 = disparityMap2*10
+        disparityMap2 = disparityMap2*5
         disparityMap2 = disparityMap2.astype(np.uint8)
         heatmap = cv2.applyColorMap(disparityMap2, cv2.COLORMAP_JET)
         # cv2.imshow("Left image", imL)

@@ -6,10 +6,10 @@
   <arg name="debug" default="false"/>
   <arg name="model" default="$(find mapping_robot_1)/urdf/mapping_robot_1.urdf"/>
   <arg name="extra_gazebo_args" default="--verbose"/>
+ <!-- <include
+    file="$(find gazebo_ros)/launch/empty_world.launch" /> -->
   <include
-    file="$(find gazebo_ros)/launch/empty_world.launch" /> 
-  <!-- <include
-    file="$(find ebot_gazebo)/launch/original.launch" /> -->
+    file="$(find ebot_gazebo)/launch/original.launch" /> 
   <node
     name="tf_footprint_base"
     pkg="tf"
