@@ -37,12 +37,6 @@ using namespace std;
             int min    = 0;
             int cmp    = 0;
             int size   = 0;
-            // int ii;
-            // int jj;
-            // int kk;
-            // int i;
-            // int j;
-            // int k;
 
             for(int i=mid; i<r-mid; i++)
             {
@@ -143,8 +137,8 @@ int main()
 {
     Mat imgl,imgr,disp_img;
     int kernel_size[2]={5,5};
-    int block_size=7;
-    int disparity_levels=64;
+    int block_size=5;
+    int disparity_levels=32;
     CensusTransform CT;
 
     imgl = imread(  "/home/chandravaran/catkin_ws/src/3_D_Mapping_and_Localization/depth_imaging/src/im2.png" , IMREAD_GRAYSCALE ); // Load an image
