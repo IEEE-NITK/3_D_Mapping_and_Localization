@@ -44,11 +44,7 @@ class CensusTransform
                     {
                         for(int jj=j-mid ; jj<j+mid+1 ; jj++)
                         {
-<<<<<<< HEAD
                             if( imgr.at<uchar>(ii, jj) < imgr.at<uchar>(i,j))
-=======
-                            if( imgr.at<uchar>(Point(jj, ii)) < imgr.at<uchar>(Point(j, i)))
->>>>>>> 5cee8285ebaf71a77a19eb070c7a697307f57d39
                             {
                                 csr[count]=0;
                                 // cout << imgr.data[ii, jj] ;
