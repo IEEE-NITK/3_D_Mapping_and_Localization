@@ -35,7 +35,7 @@ int main()
     imshow("right image",imgr);
     // waitKey();
     auto start = std::chrono::high_resolution_clock::now();
-    disp_img = CT.census_convolution(imgl,imgr,block_size,disparity_levels);
+    // disp_img = CT.census_convolution(imgl,imgr,block_size,disparity_levels);
     disp_img1 = CT1.census_convolution(imgl,imgr,block_size,disparity_levels);
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
 
@@ -43,7 +43,7 @@ int main()
 
     cout << "Time taken in Microseconds: " << microseconds <<endl;
     
-    imshow("disp image",disp_img);
+    // imshow("disp image",disp_img);
     imshow("disp image 1",disp_img1);
     waitKey();
     return 0;

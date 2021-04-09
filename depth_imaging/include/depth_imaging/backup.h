@@ -28,7 +28,6 @@ namespace disparity_map
 
         Mat census_convolution(Mat imgl, Mat imgr,int block_size, int disparity_levels)
         {
-            CV_Assert(imgr.depth() == CV_8U);
 
             Mat output_image(imgr.rows,imgr.cols,CV_8U);
             int csr[block_size*block_size];
@@ -49,31 +48,29 @@ namespace disparity_map
             int jj     = 0; 
             int kk     = 0; 
 
-            uchar* row_right;
-            uchar* row_left;
+            uchar* row_right_outer;
+            uchar* row_right_inner;
+            uchar* row_left_outer;
+            uchar* row_left_inner;
             uchar* row_output;
-
-            // if (imgr.isContinuous())
-            // {
-            //     c *= r;
-            //     r = 1;
-            // }
 
             double filter_value = block_size*block_size/10;
 
             for(i=mid; i<r-mid; i++)
             {
-                row_right = imgr.ptr<uchar>(i);
-                row_left  = imgl.ptr<uchar>(i);
+                row_right_outer = imgr.ptr<uchar>(i);
+                row_left_outer  = imgl.ptr<uchar>(i);
                 row_output= output_image.ptr<uchar>(i);
                 for(j=mid; j<c-mid ; j++)
                 {
                     count=0;
                     for(ii=i-mid ; ii<i+mid+1 ; ii++)
                     {
+                        // One mistake done previously is that we did not change the pointer value when it was in the inner loop
+                        row_right_inner = imgr.ptr<uchar>(ii);
                         for(jj=j-mid ; jj<j+mid+1 ; jj++)
                         {
-                            if( row_right[jj] < row_right[j])
+                            if( row_right_inner[jj] < row_right_outer[j])
                             {
                                 csr[count]=0;
                             }
@@ -97,15 +94,16 @@ namespace disparity_map
 
                     size = min-j;
                     double error[size];
-                    for( k=j; k<min; k++ )
+                    for( k=j+1; k<min; k++ )
                     {
                         count=0;
                         cmp  =0;
                         for( ii=i-mid ; ii<i+mid+1 ; ii++)
                         {
+                            row_left_inner  = imgl.ptr<uchar>(ii);
                             for( kk=k-mid ; kk<k+mid+1 ; kk++)
                             {
-                                if( row_left[kk] < row_left[k])
+                                if( row_left_inner[kk] < row_left_outer[k])
                                 {
                                     csl[count]=0;
                                 }
@@ -147,10 +145,10 @@ namespace disparity_map
                 
             }
 
-            // if(mini>filter_value)
-            // {
-            //     idx = 0;
-            // }
+            if(mini>filter_value)
+            {
+                idx = 0;
+            }
 
             return idx;        
         }
