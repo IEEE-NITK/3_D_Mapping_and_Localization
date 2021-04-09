@@ -26,19 +26,17 @@ namespace disparity_map
 
         Mat image;
 
-        Mat census_convolution(Mat imgl, Mat imgr, int kernel_size[2],int block_size, int disparity_levels)
+        Mat census_convolution(Mat imgl, Mat imgr,int block_size, int disparity_levels)
         {
             Mat padded_image,output_image(imgr.rows,imgr.cols,CV_8U);
-            int row_padding,col_padding,bits=0;
-            row_padding = kernel_size[0]/2;
-            col_padding = kernel_size[1]/2;
             // copyMakeBorder(imgl,padded_image,row_padding,row_padding,col_padding,col_padding,BORDER_CONSTANT,0);
-            int csr[kernel_size[0]*kernel_size[1]-1]={0};
-            int csl[kernel_size[0]*kernel_size[1]-1]={0};
+            int csr[block_size*block_size];
+            int csl[block_size*block_size]={0};
             uint8_t *img_datar = imgr.data;
             uint8_t *img_datal = imgl.data;
+            int channels = imgr.channels();
             int r      = imgr.rows;
-            int c      = imgr.cols;
+            int c      = imgr.cols*channels;
             int stride = imgr.step; 
             int mid    = block_size/2;
             int count  = 0;
@@ -46,32 +44,27 @@ namespace disparity_map
             int min    = 0;
             int cmp    = 0;
             int size   = 0;
-            int ii;
-            int jj;
-            int kk;
-            int i;
-            int j;
-            int k;
 
-            for(i=mid; i<r-mid; i++)
+            double filter_value = block_size*block_size/10;
+
+            for(int i=mid; i<r-mid; i++)
             {
-                for(j=mid; j<c-mid ; j++)
+                for(int j=mid; j<c-mid ; j++)
                 {
                     count=0;
-                    cout << "i: \n" << i;
-                    cout << "j: \n" << j;
-                    for(ii=i-mid ; ii<i+mid+1 ; ii++)
+                    for(int ii=i-mid ; ii<i+mid+1 ; ii++)
                     {
-                        for( jj=j-mid ; jj<j+mid+1 ; jj++)
+                        for(int jj=j-mid ; jj<j+mid+1 ; jj++)
                         {
-                            if( img_datar[ii*stride + jj] < img_datar[i*stride+j])
+                            if( imgr.at<uchar>(Point(jj,ii)) < imgr.at<uchar>(Point(j,i)))
                             {
                                 csr[count]=0;
-                                // cout << csr[count] ;
+                                // cout << imgr.data[ii, jj] ;
                             }
                             else 
                             {
                                 csr[count]=1;
+                                // cout << imgr.data[ii, jj] ;
                                 // cout << csr[count] ;
                             }
 
@@ -89,28 +82,35 @@ namespace disparity_map
                     else
                     {
                         min = c-mid;
-                    }   
+                    }
 
-                    size = j-min;
-                    cout << "size: " << size;
+                    
+                    // cout << "CSR: "<< endl;
+                    // for (size_t i = 0; i < sizeof(csr)/sizeof(csr[0]); i++) {
+                    //     std::cout << csr[i] << ' ';
+                    // }
+                    // cout << " " << endl;
+
+
+                    size = min-j;
+                    // cout << "size: " << size;
                     double error[size];
-                    count1=0;
-                    for( k=j; k<min; k++ )
+                    for(int k=j; k<min; k++ )
                     {
                         count=0;
                         cmp  =0;
-                        for( ii=i-mid ; ii<i+mid+1 ; ii++)
+                        for(int ii=i-mid ; ii<i+mid+1 ; ii++)
                         {
-                            for( kk=k-mid ; kk<k+mid+1 ; kk++)
+                            for(int kk=k-mid ; kk<k+mid+1 ; kk++)
                             {
-                                if( img_datal[ii*stride + kk] < img_datal[i*stride+k])
+                                if( imgl.at<uchar>(Point(kk,ii)) < imgl.at<uchar>(Point(k,i)))
                                 {
-                                    csl[count++]=0;
+                                    csl[count]=0;
                                     // cout << csl[count-1] ;
                                 }
                                 else 
                                 {
-                                    csl[count++]=1;
+                                    csl[count]=1;
                                     // cout << csr[count-1] ;
                                 }
 
@@ -118,33 +118,57 @@ namespace disparity_map
                                 {
                                     cmp++;
                                 }
+
+                                count++;
                             }
                         }
 
-                        error[count1++] = cmp;
+                        // cout << "CSL: "<< endl;
+                        // for (size_t i = 0; i < sizeof(csl)/sizeof(csl[0]); i++) {
+                        //     std::cout << csl[i] << ' ';
+                        // }
+                        // cout << " " << endl;
+                        
+                        error[k-j] = cmp;
                     }
- 
-                    output_image.data[i,j] = (uint8_t) indexofSmallestElement(error,size);  
-                    cout << "done with one pixel\n";                      
+
+                    // for (size_t i = 0; i < sizeof(error)/sizeof(error[0]); i++) {
+                    //         std::cout << error[i] << ' ';
+                    //     }
+                    // cout << " " << endl;
+                    
+                    output_image.at<uchar>(i,j) =(uint8_t) (((double) indexofSmallestElement(error,disparity_levels,filter_value)/(double)disparity_levels*255));
+                    // cout << "Index: "<< endl;
+                    // cout << indexofSmallestElement(error,disparity_levels) <<endl;
+                    // cout << "Image pixel value: "<< endl;
+                    // cout << (int)output_image.at<uchar>(i,j) <<endl;
+                    // cout << "done with one pixel\n";                      
                 }
+                
             }
             return output_image;
         }
 
-        int indexofSmallestElement(double array[], int size)
+        int indexofSmallestElement(double array[], int size, double filter_value)
         {
-            int index = 0;
+            int mini = array[0], idx = 0;
 
             for(int i = 1; i < size; i++)
             {
-                if(array[i] < array[index])
-                    index = i;              
+                if(array[i] < mini)
+                {
+                    idx = i;
+                    mini = array[i];
+                }        
             }
 
-            return index;
+            if(mini>filter_value)
+            {
+                idx = 0;
+            }
+
+            return idx;
         }
-
-
     };
 }
 
