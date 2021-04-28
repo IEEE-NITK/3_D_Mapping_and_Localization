@@ -27,20 +27,26 @@ namespace disparity
             Mat totalMatchingCostGray(Mat imgl, Mat imgr)
             {
                 int disparity_levels=16;
-                Mat img_cencus; // output image for cencus transform 
                 Mat img_sad;    // output image for sum of absolute difference 
+                Mat img_cencus; // output image for cencus transform 
                 Mat imgLx1(imgl.rows,imgl.cols,CV_64F);
                 Mat imgLy1(imgl.rows,imgl.cols,CV_64F);
                 Mat imgRx1(imgr.rows,imgr.cols,CV_64F);
                 Mat imgRy1(imgr.rows,imgr.cols,CV_64F);
+
                 std::vector<Mat> imgLxy(3);
                 std::vector<Mat> imgRxy(3);
+                std::vector<Mat> cencus_mbm;
+                std::vector<Mat> sad_gray;
+                std::vector<Mat> sad_multi;
+
+                
 
                 // Finding the X and Y gradient images for left 
                 Sobel(imgl,imgLx1,CV_64F,1,0,3);
                 Sobel(imgl,imgLy1,CV_64F,0,1,3);
 
-                //Finding the X and Y gradient images for right 
+                // Finding the X and Y gradient images for right 
                 Sobel(imgr,imgRx1,CV_64F,1,0,3);
                 Sobel(imgr,imgRy1,CV_64F,0,1,3);
 
@@ -55,13 +61,17 @@ namespace disparity
                 imgRxy[2] = imgRy1;
 
                 // Finding errors using census transform by combining color and gradient and forming a 3d image 
-                cencus.censusTransformMbm(imgLxy,imgRxy);
+                cencus_mbm = cencus.censusTransformMbm(imgLxy,imgRxy);
+                cout << "Finished Cencus" << endl;
 
                 // Finding errors using SAD in color space 
-                sad.sumOfAbsoluteDiffMbm(imgl,imgr,disparity_levels);
+                sad_gray = sad.sumOfAbsoluteDiffMbm(imgl,imgr,disparity_levels);
+                cout << "Finished SAD in gray space" << endl;
 
                 // Finding errors using SAD for gradient images
-                sad.sumOfAbsoluteDiffMbm(imgLxy,imgRxy,disparity_levels);
+                // This function is overloaded
+                sad_multi = sad.sumOfAbsoluteDiffMbm(imgLxy,imgRxy,disparity_levels);
+                cout << "Finished SAD in gradient space" << endl;
 
                 
             }
