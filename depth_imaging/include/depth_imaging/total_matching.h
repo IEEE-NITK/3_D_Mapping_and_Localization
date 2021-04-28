@@ -33,14 +33,19 @@ namespace disparity
                 Mat imgLy1(imgl.rows,imgl.cols,CV_64F);
                 Mat imgRx1(imgr.rows,imgr.cols,CV_64F);
                 Mat imgRy1(imgr.rows,imgr.cols,CV_64F);
+                Mat combined_disp(imgr.rows,imgr.cols,CV_64F);
 
                 std::vector<Mat> imgLxy(3);
                 std::vector<Mat> imgRxy(3);
                 std::vector<Mat> cencus_mbm;
                 std::vector<Mat> sad_gray;
                 std::vector<Mat> sad_multi;
-
+                std::vector<Mat> combined_disp_array(disparity_levels);
                 
+
+                double laplacian_cencus_mbm_weight = 45;
+                double laplacian_sad_gray_weight   = 5;
+                double laplacian_sad_multi_weight  = 18;
 
                 // Finding the X and Y gradient images for left 
                 Sobel(imgl,imgLx1,CV_64F,1,0,3);
@@ -72,6 +77,36 @@ namespace disparity
                 // This function is overloaded
                 sad_multi = sad.sumOfAbsoluteDiffMbm(imgLxy,imgRxy,disparity_levels);
                 cout << "Finished SAD in gradient space" << endl;
+
+                uint64* row_sad_gray;
+                uint64* row_sad_multi;
+                uint64* row_cencus_mbm;
+                uint64* row_combined_disp;
+
+
+                // Using the laplacian equation to combine the results
+                for(int i=0; i<disparity_levels ; i++)
+                {
+                    cencus_mbm[i] = cencus_mbm[i]/laplacian_cencus_mbm_weight;
+                    sad_gray[i] = sad_gray[i]/laplacian_sad_gray_weight;
+                    sad_multi[i] = sad_multi[i]/laplacian_sad_multi_weight;
+
+                    combined_disp.setTo(0); 
+
+                    for(int j=0; j<imgl.rows ; j++)
+                    {
+                        row_sad_gray       = sad_gray[i].ptr<uint64>(j);
+                        row_sad_multi      = sad_multi[i].ptr<uint64>(j);
+                        row_cencus_mbm     = cencus_mbm[i].ptr<uint64>(j);
+                        row_combined_disp  = combined_disp.ptr<uint64>(j);
+                        for(int k=0; k<imgl.cols ; k++)
+                        {
+                            row_combined_disp[k] = 3 - 1/exp(row_cencus_mbm[k]) - 1/exp(row_sad_gray[k]) - 1/exp(row_sad_multi[k]);
+                        }
+                    }
+
+                    combined_disp_array[i] = combined_disp;
+                }
 
                 
             }
