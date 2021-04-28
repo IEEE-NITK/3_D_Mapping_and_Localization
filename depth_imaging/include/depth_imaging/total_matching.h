@@ -34,6 +34,7 @@ namespace disparity
                 Mat imgRx1(imgr.rows,imgr.cols,CV_64F);
                 Mat imgRy1(imgr.rows,imgr.cols,CV_64F);
                 Mat combined_disp(imgr.rows,imgr.cols,CV_64F);
+                Mat output(imgr.rows,imgr.cols,CV_8U);
 
                 std::vector<Mat> imgLxy(3);
                 std::vector<Mat> imgRxy(3);
@@ -82,6 +83,7 @@ namespace disparity
                 uint64* row_sad_multi;
                 uint64* row_cencus_mbm;
                 uint64* row_combined_disp;
+                uint64* row_ouput;
 
 
                 // Using the laplacian equation to combine the results
@@ -108,7 +110,24 @@ namespace disparity
                     combined_disp_array[i] = combined_disp;
                 }
 
-                
+                // Getting the disparity map
+                int mid =  11/2;
+                std::vector<uint64> disparity_values(disparity_levels);
+
+                for(int j=mid; j<(imgl.rows - mid) ; j++)
+                {
+                    for(int k=mid; k<min(imgl.cols-64,imgl.cols-mid) ; k++)
+                    {
+                        for(int i=0; i<disparity_levels ; i++)
+                        {
+                            disparity_values[i] = *combined_disp_array[i].ptr<uint64>(j,k);
+                        }
+
+                        *output.ptr<uchar>(j,k) = (std::min_element(disparity_values.begin(),disparity_values.end()) - disparity_values.begin())/disparity_levels*255;
+                    }
+                }
+
+                return output;
             }
         private:
             CencusTransform cencus;
