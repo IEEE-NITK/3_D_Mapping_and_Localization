@@ -67,7 +67,7 @@ namespace disparity
                 imgRxy[2] = imgRy1;
 
                 // Finding errors using census transform by combining color and gradient and forming a 3d image 
-                cencus_mbm = cencus.censusTransformMbm(imgLxy,imgRxy);
+                cencus_mbm = cencus.censusTransformMbm(imgLxy,imgRxy,disparity_levels);
                 cout << "Finished Cencus" << endl;
 
                 // Finding errors using SAD in color space 

@@ -85,12 +85,12 @@ namespace disparity
 
                 }
 
-                Mat temp;
+                Mat temp1;
                 for(int i=0; i<errors_1_61.size(); i++)
                 {
-                    temp = min(errors_61_1[i],errors_1_61[i]);
-                    temp = temp * errors_11_11[i];
-                    out.push_back(temp*errors_3_3[i]);
+                    temp1 = min(errors_61_1[i],errors_1_61[i]);
+                    temp1 = temp1 * errors_11_11[i];
+                    out.push_back(temp1*errors_3_3[i]);
                 }
     
                 return out;    
@@ -166,12 +166,12 @@ namespace disparity
                    }
                 }
 
-                Mat temp;
+                Mat temp1;
                 for(int i=0; i<errors_1_61.size(); i++)
                 {
-                    temp = min(errors_61_1[i],errors_1_61[i]);
-                    temp = temp * errors_11_11[i];
-                    out.push_back(temp*errors_3_3[i]);
+                    temp1 = min(errors_61_1[i],errors_1_61[i]);
+                    temp1 = temp1 * errors_11_11[i];
+                    out.push_back(temp1*errors_3_3[i]);
                 }
     
                 return out;    
